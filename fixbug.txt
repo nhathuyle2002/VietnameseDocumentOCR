@@ -1,0 +1,16 @@
+Lỗi thiếu cuda:
+In detection/predict.py:
+    self.device = torch.device('cuda') --> self.device = torch.device('cpu')
+In detection/postprocess/_init_.py:
+    Uncomment line 16,17
+In detection/models/PAN/shufflenetv2.py:
+    --> from torch.hub import load_state_dict_from_url
+In :
+    Polygon --> polygon
+file \modules\ocr\tool\translate.py:
+    Comment line 130: model = model.to(device)
+file modules\detection\predict.py
+    comment line 123, 120: torch.cuda.synchronize(self.device) 
+file modules\ocr\tool\predictor.py:
+    model.load_state_dict(torch.load(weights, map_location=device))  --> model.load_state_dict(torch.load(weights, map_location=torch.device('cpu'))) 
+    comment line 28: img = img.to(self.config['device'])
