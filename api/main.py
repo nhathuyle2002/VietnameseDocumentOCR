@@ -11,6 +11,7 @@ async def perform_ocr(file: UploadFile = File(...)):
         file_object.write(content)
 
     texts = ocr_end2end.img_to_txt(file_location)
+    print(texts)
     link_sound = soundlink_end2end.txt_to_wav(texts)
     print(link_sound)
 
