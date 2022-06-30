@@ -3,21 +3,46 @@ from Vbee import soundlink_end2end
 import ocr_end2end
 
 app = FastAPI()
-@app.post('/ocr/')
-async def perform_ocr(file: UploadFile = File(...)):
+
+@app.post('/convert_img_to_sound/')
+async def convert_img_to_sound(file: UploadFile = File(...)):
     content = file.file.read()
-    file_location = f"files/{file.filename}"
-    with open(file_location, "wb+") as file_object:
-        file_object.write(content)
+    name = file.filename.split('.')[0]
+
+    file_location = f"files/images/{name}.jpg"
+    with open(file_location, "wb+") as file:
+        file.write(content)
 
     texts = ocr_end2end.img_to_txt(file_location)
+    print(type(texts))
     print(texts)
+    with open(f"files/texts/{name}.txt", "w", encoding="utf-8") as file:
+        file.write(texts)
+
+    print('converting text to sound')
     link_sound = soundlink_end2end.txt_to_wav(texts)
     print(link_sound)
+    if link_sound == False:
+        return {'Error': 'Can not get direct link from Vbee!'}
+    with open(f"files/links/{name}.txt", "w") as file:
+        file.write(link_sound)
 
-    return{'link': link_sound}
+    return{'link_wav': link_sound}
 
 
+# @app.post('/ocr/')
+# async def perform_ocr(file: UploadFile = File(...)):
+#     content = file.file.read()
+#     file_location = f"files/{file.filename}"
+#     with open(file_location, "wb+") as file_object:
+#         file_object.write(content)
+
+#     texts = ocr_end2end.img_to_txt(file_location)
+#     print(texts)
+#     link_sound = soundlink_end2end.txt_to_wav(texts)
+#     print(link_sound)
+
+#     return{'link': link_sound}
 
 # from fastapi import FastAPI, UploadFile, File
 # from fastapi.responses import FileResponse
